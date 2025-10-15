@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Corner - Full Site Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#ff9933',  /* Saffron/Orange - India theme */
+                        'secondary': '#138808', /* Green - India theme */
+                        'background': '#f4f7f6',
+                        'card-bg': '#ffffff',
+                        'accent': '#4f46e5', /* Indigo for buttons/focus */
+                        'emergency': '#dc2626' /* Red for emergency/alert */
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ensures HTML and Body take up the full viewport height */
+        html, body {
+            height: 100%; 
+        }
+
+        :root {
+            --primary-color: #ff9933;
+            --secondary-color: #138808;
+            --text-color: #343a40;
+            --light-gray: #e9ecef;
+            --border-radius: 10px;
+            --shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        #app-container {
+            min-height: 100%; 
+            width: 100%; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: theme('colors.background');
+            font-family: 'Inter', sans-serif;
+            padding: 20px 0;
+        }
+
+        .card {
+            background-color: theme('colors.card-bg');
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            width: 95%;
+            max-width: 900px;
+            margin: 1rem;
+        }
+        
+        /* Specific card sizing */
+        #login-page, #start-page, #page-slot-booking, #page-offline-payment, #page-emergency, #page-receipt, #page-class-select, #page-dates-count, #page-online-payment {
+            max-width: 550px;
+        }
+        
+        input:focus, select:focus {
+            border-color: theme('colors.accent') !important;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+            outline: none;
+        }
+
+        .btn-base {
+            transition: all 0.15s ease-in-out;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: #0d8200;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-danger {
+            background-color: theme('colors.emergency');
+            color: white;
+            transition: all 0.15s ease-in-out;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .trip-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: left;
+            margin-top: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background-color: #f8f9fa;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+            text-align: left;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+            text-align: left;
+        }
+        .list-item:hover {
+            border-color: var(--primary-color);
+            background-color: #fff9f5;
+        }
+        .list-item.selected {
+            border-color: var(--secondary-color);
+            background-color: #f7fff5;
+            box-shadow: 0 0 0 2px rgba(19, 136, 8, 0.5);
+        }
+        .select-btn {
+            padding: 8px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5pt;
+            cursor: pointer;
+        }
+
+        .traveler-form-group {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: #fdfdfd;
+        }
+        
+        .route-container {
+            flex: 1 1 300px;
+            min-width: 280px;
+            max-width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        .route-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        .route-container.selected {
+            border-color: var(--secondary-color);
+            border-width: 2px;
+            background-color: #f7fff5;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        /* Receipt specific styles */
+        .receipt-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #ced4da;
+        }
+        .receipt-total {
+            border-top: 2px solid var(--secondary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding: 12px 0;
+            margin-top: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* NEW: MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background-color: theme('colors.card-bg');
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        /* Guide Card Styles */
+        .guide-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* Pre-Booking Card Styling */
+        .booking-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fcfcfc;
+        }
+        .booking-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .booking-card-img {
+            background-color: #ccc;
+            height: 100px;
+            width: 100%;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+        .rating-star {
+            color: #ffc107;
+        }
+
+        /* Review Card Style */
+        .review-card-item {
+            border: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+
+        /* CHATBOT STYLES (MODIFIED FOR VISIBILITY) */
+        #chatbot-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 70px; /* Larger */
+            height: 70px; /* Larger */
+            z-index: 1000;
+            background-color: var(--primary-color); /* Bright Saffron */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow */
+        }
+        #chatbot-btn:hover {
+            background-color: #e68a2e; /* Darken on hover */
+            transform: scale(1.05);
+        }
+        #chatbot-modal {
+            position: fixed;
+            bottom: 100px; /* Adjust for larger button */
+            right: 20px;
+            width: 90%;
+            max-width: 350px;
+            height: 500px;
+            z-index: 999;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            transform: translateY(10px);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        #chatbot-modal.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #chat-messages {
+            height: 380px;
+            overflow-y: auto;
+            background-color: #fafafa;
+            flex-grow: 1;
+        }
+        .chat-message {
+            padding: 8px 12px;
+            margin: 8px;
+            border-radius: 12px;
+            max-width: 85%;
+        }
+        .user-message {
+            background-color: theme('colors.accent');
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: var(--primary-color);
+            color: white;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 555, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container" class="w-full">
+        <div id="view-content">
+
+            <div id="login-page" class="card" style="display: none;">
+                <h1 class="text-3xl font-bold text-accent mb-6 text-center">Tourist Corner</h1>
+                <p class="text-gray-500 mb-4 text-center" id="auth-title">Sign in to continue.</p>
+
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button id="login-tab" class="flex-1 p-3 text-center font-semibold text-accent border-b-2 border-accent transition" onclick="switchAuthForm('login')">
+                        Log In
+                    </button>
+                    <button id="register-tab" class="flex-1 p-3 text-center font-semibold text-gray-500 border-b-2 border-transparent transition hover:text-accent" onclick="switchAuthForm('register')">
+                        Register
+                    </button>
+                </div>
+
+                <form id="auth-login-form" onsubmit="handleAuthSubmit(event, 'login')">
+                    <div class="mb-4">
+                        <label for="login-username" class="block text-sm font-medium text-gray-700 mb-1">Username (Email)</label>
+                        <input type="email" id="login-username" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="your@email.com" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="login-password" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-base w-full bg-accent text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md">
+                        Log In
+                    </button>
+                </form>
+
+                <form id="auth-register-form" onsubmit="handleAuthSubmit(event, 'register')" style="display:none;">
+                    <div class="mb-4">
+                        <label for="register-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="register-name" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Jane Doe" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="register-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="register-email" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="your@email.com" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="register-emergency-contact" class="block text-sm font-medium text-red-600 mb-1">Emergency Contact Number (Critical)</label>
+                        <input type="tel" id="register-emergency-contact" class="w-full p-3 border border-red-300 rounded-lg" placeholder="+91 XXXX XXXX XX" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="register-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="register-password" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-base w-full bg-primary text-white p-3 rounded-lg font-semibold hover:bg-orange-700 shadow-md">
+                        Register Account
+                    </button>
+                </form>
+
+                <p id="login-message" class="mt-4 text-sm text-red-500 text-center" style="display: none;"></p>
+            </div>
+
+            <div id="start-page" class="card" style="display: none;">
+                <div class="text-secondary text-5xl mb-4"><i class="fas fa-route"></i></div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Plan Your Indian Adventure</h1>
+                <p class="text-gray-600 mb-8">Welcome! Select your preferred planning mode.</p>
+                <button onclick="switchPage('page-service')" class="btn-base w-full bg-primary text-white p-3 rounded-lg font-semibold hover:bg-orange-700 shadow-md">
+                    <i class="fas fa-plane"></i> Go to Planner
+                </button>
+                   <button onclick="switchPage('page-emergency')" class="btn-base w-full bg-emergency text-white p-3 rounded-lg font-semibold hover:bg-red-700 shadow-md mt-4">
+                    <i class="fas fa-exclamation-circle"></i> View Emergency Contacts
+                </button>
+
+                <button onclick="switchPage('login')" class="text-accent mt-4 text-sm hover:underline">
+                    Log Out
+                </button>
+            </div>
+            
+            <div id="page-service" class="card" style="display: none; max-width: 700px;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">👋 How would you like to plan your trip?</h2>
+                
+                <div class="flex flex-col md:flex-row justify-around gap-6 mt-6">
+                    <div class="option-box flex-1 flex flex-col items-center text-center p-6 border-2 border-light-gray rounded-xl transition hover:border-primary hover:shadow-lg cursor-pointer" onclick="startOnlinePlanning()">
+                        <i class="fas fa-desktop text-4xl mb-3 text-secondary"></i>
+                        <h3 class="text-xl font-semibold mb-2">Online Planning & Booking</h3>
+                        <p class="text-sm text-gray-600">Plan your itinerary, select destinations, and book everything yourself instantly.</p>
+                        <span class="btn-base mt-4 px-4 py-2 bg-secondary text-white hover:bg-green-700 rounded-lg">Start Self-Service Plan</span>
+                    </div>
+
+                    <div class="option-box flex-1 flex flex-col items-center text-center p-6 border-2 border-light-gray rounded-xl transition hover:border-accent hover:shadow-lg cursor-pointer" onclick="startOfflinePlanning()">
+                        <i class="fas fa-headset text-4xl mb-3 text-accent"></i>
+                        <h3 class="text-xl font-semibold mb-2">Offline Agent Service</h3>
+                        <p class="text-sm text-gray-600">Book a consultation slot with a dedicated agent for personalized planning.</p>
+                        <span class="btn-base mt-4 px-4 py-2 bg-accent text-white hover:bg-indigo-700 rounded-lg">Book Slot</span>
+                    </div>
+                </div>
+                <div class="nav-buttons justify-start">
+                    <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <div id="page-class-select" class="card" style="display: none;">
+                   <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Select Your Travel Class</h2>
+                <form id="class-select-form" class="trip-form">
+                    <div class="input-group">
+                        <label for="travel-class-select"><i class="fas fa-tags"></i> Choose Your Travel Class</label>
+                        <select id="travel-class-select" required>
+                            <option value="luxury">Luxury (+15% Cost)</option>
+                            <option value="first">First Class (+8% Cost)</option>
+                            <option value="economy" selected>Economy (Standard Cost)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base btn-primary p-3">
+                            Next: Select Destination <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="page-destination" class="card" style="display: none; max-width: 700px;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">🌍 Online Planning: Select Destination</h2>
+                <p class="text-gray-500 text-center">Select your State/UT and **one or more** cities for your itinerary.</p>
+
+                <form id="destination-form" class="trip-form">
+                    <div class="input-group">
+                        <label for="main-place"><i class="fas fa-map-marked-alt"></i> Select State/Union Territory</label>
+                        <input type="text" id="main-place" name="main-place" placeholder="Type a State (e.g., Rajasthan, Goa, Tamil Nadu)" list="main-suggestions" oninput="updateSubPlaces()" required>
+                        <datalist id="main-suggestions"></datalist>
+                    </div>
+
+                    <div class="input-group">
+                        <label><i class="fas fa-compass"></i> Select Specific Cities (Multi-select)</label>
+                        <div id="sub-place-checkboxes" class="border border-gray-300 p-3 rounded-lg bg-gray-50 grid grid-cols-2 gap-2" style="max-height: 150px; overflow-y: auto;">
+                            <p class="text-sm text-gray-500" id="sub-place-placeholder">Select a State/UT first...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="button" class="btn-base btn-primary p-3" onclick="submitDestinationSelection(event)">
+                            Next: Select Dates <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="page-dates-count" class="card" style="display: none;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">📅 Define Trip Duration & Count</h2>
+                <form id="dates-count-form" class="trip-form">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="input-group"><label><i class="fas fa-calendar-alt"></i> Number of Days</label><input type="number" id="num-days-count" name="num-days" placeholder="Minimum 2 days" min="2" max="30" value="7" onchange="updateEndDateCount()" required></div>
+                        <div class="input-group"><label><i class="fas fa-calendar-start"></i> Start Date</label><input type="date" id="start-date-count" onchange="updateEndDateCount()" required></div>
+                        <div class="input-group"><label><i class="fas fa-calendar-end"></i> End Date</label><input type="date" id="end-date-count" required readonly></div>
+                    </div>
+                    
+                    <h3 class="section-title mt-4">Traveler Count</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="input-group"><label><i class="fas fa-user-plus"></i> Adults (13+)</label><input type="number" id="adult-count-setup" value="1" min="1" required></div>
+                        <div class="input-group"><label><i class="fas fa-child"></i> Children (0-12)</label><input type="number" id="child-count-setup" value="0" min="0"></div>
+                    </div>
+
+                    <div class="nav-buttons">
+                           <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                               <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base btn-primary p-3">
+                            Next: Traveler Names <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="page-traveler-details" class="card" style="display: none;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">👤 Full Traveler Details for Ticketing</h2>
+                <form id="traveler-details-form" class="trip-form">
+                    
+                    <h3 class="section-title mt-4">Full Traveler Names (For Ticketing)</h3>
+                    <div id="traveler-inputs">
+                        </div>
+
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base btn-primary p-3">
+                            Next: Guide Info <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="page-guide-info" class="card" style="display: none; max-width: 900px;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">🧭 Local Experts & Pre-Trip Info</h2>
+                <p class="text-gray-500 text-center mb-6">Essential details and local guides for **<span id="guide-info-sub-place-name" class="font-semibold text-primary"></span>**.</p>
+                
+                <h3 class="section-title"><i class="fas fa-user-friends"></i> Recommended Local Guides (Mock)</h3>
+                <div id="guide-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-gray-700 text-xl"><i class="fas fa-info-circle"></i> Place Overview</h3>
+                            <button onclick="showTranslatorModal()" class="btn-base bg-accent text-white p-2 rounded-lg text-sm">
+                                <i class="fas fa-language"></i> Translator
+                            </button>
+                        </div>
+                        <p id="place-description" class="text-sm text-gray-700 italic">No detailed information found for this location.</p>
+
+                        <div class="flex justify-between items-center bg-yellow-50 p-3 rounded-lg mt-4 border-l-4 border-primary">
+                            <span class="font-semibold text-gray-700 text-sm"><i class="fas fa-tshirt"></i> Essential Dress Code</span>
+                            <button onclick="showDressCodeModal()" class="btn-base bg-primary text-white p-1 px-3 rounded-lg text-xs">
+                                View Rules
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-gray-700 text-xl mb-4"><i class="fas fa-images"></i> Photos & Videos (Mock Gallery)</h3>
+                        <div id="gallery-grid" class="grid grid-cols-2 gap-3">
+                            <div class="h-24 bg-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-600">Hotel Photo</div>
+                            <div class="h-24 bg-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-600">Restaurant Photo</div>
+                            <div class="h-24 bg-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-600 col-span-2">Video/Virtual Tour Link</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button type="button" class="btn-base btn-primary p-3" onclick="switchPage('page-packages-select')">
+                        Next: Pre-Bookings <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+
+            <div id="page-packages-select" class="card" style="display: none; max-width: 900px;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">🏨🍽️ Pre-Booking Hub: Accommodation & Dining</h2>
+                
+                <h3 class="section-title"><i class="fas fa-hotel"></i> Recommended Hotels (Select One)</h3>
+                <div id="hotel-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    </div>
+                
+                <h3 class="section-title"><i class="fas fa-utensils"></i> Top Rated Restaurants (Pre-Book Table)</h3>
+                <div id="dining-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    </div>
+
+                <form id="packages-form" class="trip-form mt-0 pt-0">
+                    <h3 class="section-title mt-6"><i class="fas fa-drumstick-bite"></i> Optional: Add Daily Meal Plan</h3>
+                    <div class="input-group mt-0">
+                        <label for="dining-package">Choose Package for Entire Trip</label>
+                        <select id="dining-package" onchange="calculateTotal()">
+                            <option value="none" data-cost="0">No Dining Package (+₹0/day)</option>
+                            <option value="half" data-cost="800">Half Board (Breakfast & Dinner) +₹800/day</option>
+                            <option value="full" data-cost="1500">Full Board (All Meals) +₹1500/day</option>
+                        </select>
+                    </div>
+                    
+                    <div class="bg-indigo-50 p-3 rounded-lg text-center">
+                        <p class="font-semibold text-gray-700">Estimated Accommodation + Dining Cost: <span id="current-package-cost" class="text-xl text-accent font-bold">₹0</span></p>
+                    </div>
+
+
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base btn-primary p-3">
+                            Next: Transport Options <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="page-transport-select" class="card" style="display: none;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">✈️ Select Travel & Local Transport</h2>
+                <form id="transport-form" class="trip-form">
+                    <h3 class="section-title"><i class="fas fa-plane-departure"></i> Travel Mode (To & From Destination)</h3>
+                    <div class="input-group">
+                        <label for="outbound-mode">Outbound Journey (Estimated Flight/Train Cost is included in final total)</label>
+                        <select id="outbound-mode" required>
+                            <option value="flight">Flight</option>
+                            <option value="train">Train</option>
+                        </select>
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-car"></i> Local Transport Mode (In Destination)</h3>
+                    <div class="input-group">
+                        <label for="local-transport">Local Transit Choice (Cost is per day, per person)</label>
+                        <select id="local-transport" onchange="calculateTotal()" required>
+                            <option value="public" data-cost="0">Public Transit (Free)</option>
+                            <option value="taxi" data-cost="0">Taxi/Rideshare (Free)</option>
+                            <option value="rental" data-cost="2500">Rental Car (₹2500/day)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="bg-indigo-50 p-3 rounded-lg text-center">
+                        <p class="font-semibold text-gray-700">Estimated Transport + Fixed Fee: <span id="current-transport-cost" class="text-xl text-accent font-bold">₹0</span></p>
+                    </div>
+
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base btn-primary p-3">
+                            Next: Itinerary Suggestions <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="page-itinerary-suggest" class="card" style="display: none;">
+                <h2 id="itinerary-suggest-title" class="text-2xl font-bold text-gray-800 mb-4 text-center">Itinerary Suggestions</h2>
+                <p class="text-gray-500 text-center mb-6">Review these suggested routes optimized for your trip to <span id="itinerary-sub-place-name" class="font-semibold text-primary"></span>.</p>
+                
+                <div class="input-group flex items-center mb-4 p-3 bg-gray-50 rounded-lg">
+                    <label for="num-routes" class="font-medium mr-4 flex-shrink-0 text-gray-700" style="margin-bottom: 0;"><i class="fas fa-grip-lines"></i> Routes to Review:</label>
+                    <select id="num-routes" onchange="populateItinerary()" class="p-2 border border-gray-300 rounded-lg" style="width: 150px; flex-grow: 0;">
+                        <option value="1">1 Route (Standard)</option>
+                        <option value="2">2 Routes (Compare)</option>
+                    </select>
+                </div>
+
+                <div id="route-plan-details" class="flex flex-wrap gap-4 justify-around">
+                    </div>
+                <p id="route-selection-error" class="text-sm text-red-500 text-center mt-4 hidden">Please select one route option to proceed.</p>
+
+                <div class="nav-buttons">
+                    <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button type="button" class="btn-base btn-primary p-3" onclick="confirmOnlineItineraryRoute()">
+                        Confirm Route & Proceed <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="page-itinerary-confirm" class="card" style="display: none;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">✔️ Final Itinerary Confirmation</h2>
+                <div class="review-card p-5 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="text-xl font-semibold text-accent mb-4 text-center">Summary of Finalized Plans</h3>
+                    <div class="space-y-2 text-left text-gray-700">
+                        <div class="receipt-line"><span class="font-semibold">Destination:</span> <span id="conf-city-final" class="font-medium"></span></div>
+                        <div class="receipt-line"><span class="font-semibold">Trip Duration:</span> <span id="conf-nights-final" class="font-medium"></span></div>
+                        <div class="receipt-line"><span class="font-semibold">Hotel:</span> <span id="conf-hotel-final" class="font-medium"></span></div>
+                        <div class="receipt-line"><span class="font-semibold">Dining:</span> <span id="conf-dining-final" class="font-medium"></span></div>
+                        <div class="receipt-line"><span class="font-semibold">Local Transport:</span> <span id="conf-transport-final" class="font-medium"></span></div>
+                        <div class="receipt-line"><span class="font-semibold">Selected Route:</span> <span id="conf-route-final" class="text-secondary font-bold"></span></div>
+                    </div>
+                </div>
+                
+                <div class="agreement text-center mt-6">
+                    <input type="checkbox" id="final-confirm-check" required class="mr-2 h-4 w-4 text-accent border-gray-300 rounded focus:ring-accent">
+                    <label for="final-confirm-check" class="text-gray-700 font-medium">
+                        I confirm that the entire trip itinerary and selected services are correct.
+                    </label>
+                </div>
+
+                <div class="nav-buttons">
+                    <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button type="button" class="btn-base btn-danger p-3" onclick="confirmOnlineItinerary()">
+                        Confirm & Proceed to Receipt
+                    </button>
+                </div>
+            </div>
+
+            <div id="page-receipt" class="card" style="display: none;">
+                <h2 class="text-3xl font-bold text-secondary mb-4 text-center"><i class="fas fa-file-invoice-dollar mr-2"></i> Final Receipt</h2>
+                <p class="text-gray-600 mb-6 text-center" id="receipt-type-info"></p>
+                
+                <div id="receipt-details" class="space-y-2">
+                    </div>
+
+                <div id="receipt-totals" class="receipt-total receipt-line text-secondary">
+                    </div>
+
+                <div class="nav-buttons">
+                    <button type="button" id="receipt-back-btn" class="btn-base btn-secondary p-3" onclick="goBackDynamic()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button id="receipt-continue-btn" onclick="continueFromReceipt()" class="btn-base bg-accent text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md">
+                        Continue to Payment
+                    </button>
+                </div>
+            </div>
+            
+            <div id="page-online-payment" class="card" style="display: none;">
+                <h1 class="text-3xl font-bold text-accent mb-6 text-center">Final Trip Payment</h1>
+                <p class="text-gray-500 mb-4 text-center">You are now paying the total trip cost of <span class="font-bold text-secondary text-xl" id="payment-total-amount"></span>.</p>
+                
+                <div class="bg-red-50 p-4 rounded-lg text-center mb-6">
+                    <p class="font-semibold text-gray-700">Booking Summary:</p>
+                    <p class="text-base text-gray-700 font-bold" id="payment-summary-text">7 Days | Jaipur, Rajasthan</p>
+                </div>
+
+                <form id="online-payment-form" onsubmit="processOnlinePayment(event)">
+                    <div class="mb-4">
+                        <label for="card-number" class="block text-sm font-medium text-gray-700 mb-1">Card Number (Any Input)</label>
+                        <input type="text" id="card-number" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" required>
+                    </div>
+                    
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base w-full bg-accent text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md">
+                            <i class="fas fa-credit-card"></i> Pay Now
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+
+            <div id="page-slot-booking" class="card" style="display: none;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center"><i class="fas fa-calendar-check text-accent"></i> Book Your Agent Slot</h2>
+                <p class="text-gray-600 mb-8 text-center">Select a time to meet our expert travel agent.</p>
+
+                <form id="slot-booking-form" class="trip-form">
+                    <div class="input-group">
+                        <label for="slot-date"><i class="fas fa-calendar-day"></i> Preferred Date</label>
+                        <input type="date" id="slot-date" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="slot-time"><i class="fas fa-clock"></i> Preferred Time Slot</label>
+                        <select id="slot-time" required>
+                            <option value="" disabled selected>Select a time</option>
+                            <option value="10:00 AM">10:00 AM - 11:00 AM</option>
+                            <option value="11:30 AM">11:30 AM - 12:30 PM</option>
+                            <option value="2:00 PM">2:00 PM - 3:00 PM</option>
+                            <option value="4:00 PM">4:00 PM - 5:00 PM</option>
+                        </select>
+                    </div>
+                    
+                    <div class="nav-buttons">
+                           <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                               <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base bg-accent text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md">
+                            Proceed to Virtual Preview
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="page-offline-payment" class="card" style="display: none;">
+                <h1 class="text-3xl font-bold text-accent mb-6 text-center"><i class="fas fa-vr-cardboard"></i> Virtual Preview</h1>
+                <p class="text-gray-500 mb-4 text-center">Your slot for **<span id="slot-summary-text"></span>** is reserved. Experience your destination now.</p>
+                
+                <div class="bg-green-100 p-4 rounded-lg text-center mb-6 border-l-4 border-secondary">
+                    <p class="font-semibold text-secondary">
+                        <i class="fas fa-headset mr-2"></i> **AR/VR Simulation:**
+                    </p>
+                    <p class="text-sm text-gray-700 mt-2">
+                        You can now virtually walk through sample hotel rooms and view 360-degree city streetscapes before your consultation.
+                    </p>
+                    <button onclick="alert('Simulating Immersive 360° Walkthrough...')" class="btn-base bg-primary text-white p-2 mt-3 rounded-lg text-sm hover:bg-orange-700">
+                        Start Virtual Tour (Mock)
+                    </button>
+                </div>
+
+                <form id="offline-payment-form">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 text-center border-t pt-4">Confirm Consultation Fee (₹500)</h3>
+                    <div class="mb-4">
+                        <label for="offline-card-number" class="block text-sm font-medium text-gray-700 mb-1">Card Number (Any Input)</label>
+                        <input type="text" id="offline-card-number" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" required>
+                    </div>
+                    
+                    <div class="nav-buttons">
+                        <button type="button" class="btn-base btn-secondary p-3" onclick="goBack()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-base w-full bg-accent text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 shadow-md">
+                            <i class="fas fa-money-check-alt"></i> Pay <span class="font-bold">₹500</span> Fee
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="page-emergency" class="card" style="display: none;">
+                <h2 class="text-3xl font-bold text-emergency mb-6 text-center"><i class="fas fa-exclamation-triangle mr-2"></i> Important Safety Check</h2>
+                
+                <a href="tel:100" class="btn-base w-full bg-emergency text-white p-3 rounded-lg font-semibold hover:bg-red-700 shadow-md mb-6">
+                    <i class="fas fa-phone-square-alt mr-2"></i> CALL POLICE EMERGENCY NOW (100)
+                </a>
+
+                <div class="bg-red-50 border-l-4 border-emergency p-4 mb-6">
+                    <h3 class="text-lg font-semibold text-emergency mb-2">🇮🇳 Emergency Contacts (All India)</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                        <li><i class="fas fa-phone-alt mr-2"></i> <span class="font-semibold">Police:</span> 100</li>
+                        <li><i class="fas fa-ambulance mr-2"></i> <span class="font-semibold">Ambulance:</span> 102</li>
+                    </ul>
+                </div>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-2"><i class="fas fa-shield-alt mr-2"></i> Top Safety Tips</h3>
+                    <p class="text-sm text-gray-600">Always carry a photocopy of your passport/ID and avoid drinking tap water. Be mindful of your belongings in crowded areas.</p>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button type="button" class="btn-base btn-secondary p-3" onclick="goBackDynamic()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button id="emergency-continue-btn" onclick="continueFromEmergency()" class="btn-base bg-emergency text-white p-3 rounded-lg font-semibold hover:bg-red-700 shadow-md">
+                        Confirm Check & Proceed
+                    </button>
+                </div>
+            </div>
+            
+            <div id="page-review-feedback" class="card" style="display: none;">
+                <h2 class="text-2xl font-bold text-primary mb-4 text-center"><i class="fas fa-star-half-alt mr-2"></i> Your Feedback</h2>
+                <p class="text-gray-600 mb-6 text-center">See what others say about their experience before submitting your rating.</p>
+                
+                <h3 class="font-bold text-gray-800 mb-3 border-b pb-2"><i class="fas fa-comments"></i> Past Reviews:</h3>
+                <div id="past-reviews" class="max-h-48 overflow-y-auto mb-6">
+                    </div>
+
+                <form id="feedback-form" class="trip-form">
+                    <div class="input-group">
+                        <label><i class="fas fa-star"></i> Overall Rating (1-5)</label>
+                        <select id="overall-rating" required class="p-3 border rounded-lg">
+                            <option value="" disabled selected>Select Rating</option>
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label><i class="fas fa-comments"></i> Comments (Optional)</label>
+                        <textarea id="feedback-comments" rows="3" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Any suggestions or praise?"></textarea>
+                    </div>
+
+                    <div class="nav-buttons justify-end">
+                        <button type="submit" class="btn-base w-full bg-secondary text-white p-3 rounded-lg font-semibold hover:bg-green-700 shadow-md">
+                            Submit Feedback & Finish <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="page-receipt-success" class="card" style="display: none;">
+                <h2 class="text-3xl font-bold text-secondary mb-4 text-center"><i class="fas fa-check-circle mr-2"></i> Transaction Complete!</h2>
+                
+                <div class="p-6 bg-green-50 border border-green-200 rounded-lg text-center mb-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-2" id="success-type-header"></h3>
+                    <p class="text-green-600 mb-4" id="success-message"></p>
+                    <span class="inline-block bg-white text-gray-800 font-mono py-1 px-3 rounded-lg text-sm">Booking ID: <span id="success-booking-id">TC-45987</span></span>
+                </div>
+                
+                <button onclick="switchPage('start')" class="btn-base w-full bg-primary text-white p-3 rounded-lg font-semibold hover:bg-orange-700 shadow-md">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </button>
+            </div>
+
+        </div>
+    </div>
+    
+    <div id="dress-code-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold text-primary mb-4"><i class="fas fa-tshirt"></i> Dress Code for <span id="modal-place-name"></span></h3>
+            <p class="text-lg font-semibold text-gray-700 mb-3" id="modal-dress-title"></p>
+            <p id="modal-dress-content" class="text-gray-600 text-sm text-left mb-6"></p>
+            <button onclick="hideDressCodeModal()" class="btn-base bg-secondary text-white p-2 px-4 rounded-lg hover:bg-green-700">Close</button>
+        </div>
+    </div>
+    
+    <div id="translator-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold text-accent mb-4"><i class="fas fa-language"></i> Quick Translator</h3>
+            <p class="text-gray-600 text-sm mb-4">You are planning a trip to the region of **<span id="modal-translator-place"></span>**.</p>
+            <p class="bg-indigo-50 p-3 rounded-lg text-sm font-medium">For real-time translation, please use the official Google Translate website.</p>
+            <a id="translator-link" href="#" target="_blank" class="btn-base bg-accent text-white p-2 mt-4 rounded-lg inline-block hover:bg-indigo-700">
+                <i class="fas fa-external-link-alt"></i> Go to Google Translate
+            </a>
+            <button onclick="hideTranslatorModal()" class="btn-base text-gray-600 p-2 mt-4 block mx-auto text-sm">Cancel</button>
+        </div>
+    </div>
+    
+    <button id="chatbot-btn" class="bg-primary text-white rounded-full shadow-xl hover:bg-secondary transition-all duration-300 transform scale-100 hover:scale-105" onclick="toggleChatbot()">
+        <i class="fas fa-comments text-2xl p-4"></i>
+    </button>
+
+    <div id="chatbot-modal" class="bg-card-bg rounded-xl shadow-2xl flex flex-col hidden">
+        <div class="bg-accent text-white p-3 rounded-t-xl flex justify-between items-center">
+            <span class="font-semibold">Tourist AI Assistant</span>
+            <button onclick="toggleChatbot()" class="text-white hover:text-gray-200"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chat-messages" class="flex flex-col space-y-3 p-3 flex-grow overflow-y-auto">
+            <div class="chat-message bot-message">Hello! I'm your AI Travel Assistant for India. How can I help you plan your perfect trip today?</div>
+        </div>
+        <form id="chat-form" class="p-3 border-t border-gray-200 flex" onsubmit="sendMessage(event)">
+            <input type="text" id="chat-input" placeholder="Ask about places, costs, or routes..." class="w-full p-2 border border-gray-300 rounded-l-lg focus:ring-accent focus:border-accent" required>
+            <button type="submit" id="chat-send-btn" class="bg-primary text-white p-2 rounded-r-lg hover:bg-secondary disabled:bg-gray-400">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // --- GLOBAL DATA AND STATE ---
+        const SUBSCRIPTION_FEE_PER_TRIP = 1500; // Simulated cost for non-free trips
+        
+        let tripState = {
+            mode: 'online', 
+            mainPlace: '',
+            selectedCities: [],
+            numDays: 0,
+            travelClass: 'economy',
+            adultCount: 1,
+            childCount: 0,
+            travelerNames: [], 
+            hotel: { name: '', price: 0, nights: 0, type: '' },
+            diningCostPerDay: 0,
+            transportMode: 'public',
+            transportCostPerDay: 300,
+            baseCost: 0, 
+            selectedRoute: null,
+            budget: { accommodation: 0, dining: 0, transport: 0, flight: 0, subtotal: 0, tax: 0, grandTotal: 0 }, // Agency fee removed
+            consultationFee: 500,
+            slotDate: '',
+            slotTime: '',
+            // NOTE: Simulated free trial usage
+            tripsUsed: 0 // If this is 3 or more, the fixed fee applies
+        };
+        
+        const pages = {
+            login: document.getElementById('login-page'),
+            start: document.getElementById('start-page'),
+            'page-service': document.getElementById('page-service'),
+            'page-class-select': document.getElementById('page-class-select'),
+            'page-destination': document.getElementById('page-destination'),
+            'page-dates-count': document.getElementById('page-dates-count'),
+            'page-traveler-details': document.getElementById('page-traveler-details'),
+            'page-guide-info': document.getElementById('page-guide-info'), 
+            'page-packages-select': document.getElementById('page-packages-select'),
+            'page-transport-select': document.getElementById('page-transport-select'),
+            'page-itinerary-suggest': document.getElementById('page-itinerary-suggest'), 
+            'page-itinerary-confirm': document.getElementById('page-itinerary-confirm'),
+            'page-receipt': document.getElementById('page-receipt'),
+            'page-emergency': document.getElementById('page-emergency'),
+            'page-slot-booking': document.getElementById('page-slot-booking'),
+            'page-offline-payment': document.getElementById('page-offline-payment'),
+            'page-review-feedback': document.getElementById('page-review-feedback'), 
+            'page-receipt-success': document.getElementById('page-receipt-success'),
+            'page-online-payment': document.getElementById('page-online-payment') // NEW PAGE HOOK
+        };
+        
+        let currentPage = 'login'; 
+        let pageHistory = []; 
+
+        // --- EXPANDED INDIA TRAVEL DATA (Mock Data) ---
+        const indiaData = {
+            "Andhra Pradesh": { 
+                cities: ["Visakhapatnam", "Tirupati", "Vijayawada"], 
+                info: "Coastal state known for beaches and rich temple history. Visakhapatnam, often called The City of Destiny, is a major port.", 
+                dress: { title: "Light & Modest", content: "Wear light cotton clothes. When visiting temples (like Tirupati), traditional wear (dhotis/sarees/salwar kameez) is mandatory. Shoulders and knees must be covered." }, 
+                hotels: [{name: "VSP Beach Resort", base: 8500, type: "Luxury", rating: 4.5, review_count: 850, photo: 'VSP Beach Mock Photo'}, {name: "AP City Inn", base: 4000, type: "Economy", rating: 3.8, review_count: 1200, photo: 'AP City Mock Photo'}], 
+                routes: { 
+                    "Visakhapatnam": ["RK Beach", "Submarine Museum", "Kailasagiri Hill"], 
+                    "Tirupati": ["Sri Venkateswara Temple", "Padmavathi Temple"] 
+                },
+                guides: [{name: "Ravi Teja", contact: "+91-98765-11111", specialty: "Beach & History"}, {name: "Priya V.", contact: "+91-98765-22222", specialty: "Temple Circuits"}],
+                gallery: { hotel: 'VSP Beach Mock Photo', restaurant: 'Local Andhra Meal Photo', video: 'Vizag City Tour Video' },
+                restaurants: [{name: "Coastal Spice House", rating: 4.6, cuisine: "Seafood/Local", photo: 'Coastal Spice Photo', onclick: "alert('Table booked at Coastal Spice House! (Simulated)')"}, {name: "Tirupati Sweets", rating: 4.1, cuisine: "Dessert/Snacks", photo: 'Sweet Shop Photo', onclick: "alert('Table booked at Tirupati Sweets! (Simulated)')"}]
+            },
+            "Goa": { 
+                cities: ["Panaji", "Margao", "Vasco da Gama"], 
+                info: "Famous for its beaches, nightlife, and Portuguese heritage. Panaji is the charming capital known for its Latin Quarter.", 
+                dress: { title: "Casual Western Allowed", content: "Casual beachwear is common near the coast. However, local etiquette suggests covering up (t-shirt/shorts) when visiting churches or interior villages." }, 
+                hotels: [{name: "Goa Beachfront Resort", base: 15000, type: "Luxury", rating: 4.8, review_count: 3100, photo: 'Goa Resort Mock Photo'}, {name: "North Goa Hostel", base: 3000, type: "Economy", rating: 3.5, review_count: 5000, photo: 'Goa Hostel Mock Photo'}], 
+                routes: { 
+                    "Panaji": ["Fontainhas Walk", "Miramar Beach"], 
+                    "Margao": ["Basilica of Bom Jesus", "Dudhsagar Falls Day Trip"]
+                },
+                guides: [{name: "Maria G.", contact: "+91-98765-33333", specialty: "Cuisine & Nightlife"}, {name: "Alex F.", contact: "+91-98765-44444", specialty: "History & Churches"}],
+                gallery: { hotel: 'Goa Resort Mock Photo', restaurant: 'Seafood Shack Photo', video: 'Goa Beaches Compilation' },
+                restaurants: [{name: "The Baga Grill", rating: 4.7, cuisine: "Goan/International", photo: 'Baga Grill Photo', onclick: "alert('Table booked at The Baga Grill! (Simulated)')"}, {name: "Spice Plantation Lunch", rating: 4.3, cuisine: "Goan/Traditional", photo: 'Spice Farm Photo', onclick: "alert('Table booked at Spice Plantation Lunch! (Simulated)')"}]
+            },
+            "Rajasthan": { 
+                cities: ["Jaipur", "Udaipur", "Jodhpur"], 
+                info: "The Land of Kings, famous for its grand forts, palaces, and deserts. Jaipur, the Pink City, is known for its majestic architecture.", 
+                dress: { title: "Layers for Desert Climate", content: "Days are hot, nights are cool. Wear light cotton layers. For visiting temples and mosques, shoulders and knees must be covered. Bright colors are popular for photos." }, 
+                hotels: [{name: "Jaipur Heritage Stay", base: 13000, type: "Luxury", rating: 4.9, review_count: 500, photo: 'Haveli Hotel Mock Photo'}, {name: "Udaipur Lake View", base: 6500, type: "Economy", rating: 4.2, review_count: 2100, photo: 'Lake View Mock Photo'}], 
+                routes: { 
+                    "Jaipur": ["Amer Fort Tour", "Hawa Mahal Visit", "City Palace"], 
+                    "Udaipur": ["Lake Pichola Boat Ride", "City Palace Museum"] 
+                },
+                guides: [{name: "Harish S.", contact: "+91-98765-55555", specialty: "Desert Safaris & Forts"}, {name: "Ritu K.", contact: "+91-98765-66666", specialty: "Culture & Shopping"}],
+                gallery: { hotel: 'Haveli Hotel Mock Photo', restaurant: 'Local Thali Photo', video: 'Jaipur Fort Exploration' },
+                restaurants: [{name: "Laxmi Misthan Bhandar", rating: 4.4, cuisine: "Rajasthani Sweets", photo: 'LMB Photo', onclick: "alert('Table booked at Laxmi Misthan Bhandar! (Simulated)')"}, {name: "1135 AD (Amber Fort)", rating: 4.8, cuisine: "Fine Dining/Mughlai", photo: '1135 AD Photo', onclick: "alert('Table booked at 1135 AD! (Simulated)')"}]
+            },
+            "Tamil Nadu": { 
+                cities: ["Chennai", "Madurai", "Rameswaram"], 
+                info: "Heart of Dravidian culture, famous for ancient temples and classical arts. Chennai is the cultural and economic hub of the South.", 
+                dress: { title: "Strict Temple Attire", content: "In many temples (like Madurai), men must remove shirts and wear dhotis; women must wear sarees or salwar kameez. Absolutely no Western attire inside temple premises." }, 
+                hotels: [{name: "Chennai Beach Hotel", base: 10500, type: "Luxury", rating: 4.6, review_count: 1500, photo: 'Chennai Tower Hotel Photo'}, {name: "Madurai Temple Stay", base: 5000, type: "Economy", rating: 4.0, review_count: 900, photo: 'Madurai Stay Photo'}], 
+                routes: { 
+                    "Chennai": ["Marina Beach", "Kapaleeshwarar Temple", "Government Museum"], 
+                    "Madurai": ["Meenakshi Amman Temple", "Thirumalai Nayakkar Palace"] 
+                },
+                guides: [{name: "Karthik R.", contact: "+91-98765-77777", specialty: "Temple Architect"}, {name: "Shanti A.", contact: "+91-98765-88888", specialty: "Arts & Cuisine"}],
+                gallery: { hotel: 'Chennai Tower Hotel Photo', restaurant: 'Idli/Dosa Photo', video: 'Madurai Temple Virtual Tour' },
+                restaurants: [{name: "Saravana Bhavan", rating: 4.3, cuisine: "South Indian", photo: 'Saravana Photo', onclick: "alert('Table booked at Saravana Bhavan! (Simulated)')"}, {name: "Madurai Mess", rating: 4.7, cuisine: "Chettinad", photo: 'Chettinad Photo', onclick: "alert('Table booked at Madurai Mess! (Simulated)')"}]
+            },
+            "Delhi": { 
+                cities: ["New Delhi", "Old Delhi"], 
+                info: "India's capital, a blend of ancient Mughal history and modern political power.", 
+                dress: { title: "Smart Casual & Respectful", content: "General smart casual wear is fine. For Old Delhi, mosques, and Gurudwaras, cover your head, shoulders, and legs. Remove shoes before entering religious sites." }, 
+                hotels: [{name: "Delhi Capital Grand", base: 14000, type: "Luxury", rating: 4.7, review_count: 3500, photo: 'Red Fort View Hotel'}, {name: "Delhi Budget Hostel", base: 3500, type: "Economy", rating: 3.9, review_count: 4200, photo: 'Hostel Mock Photo'}], 
+                routes: { 
+                    "New Delhi": ["India Gate", "Red Fort", "Qutub Minar"], 
+                    "Old Delhi": ["Jama Masjid", "Chandni Chowk Market"] 
+                },
+                guides: [{name: "Rohit V.", contact: "+91-98765-99999", specialty: "Mughal History"}, {name: "Simran K.", contact: "+91-98765-00000", specialty: "Street Food & Bazaars"}],
+                gallery: { hotel: 'Red Fort View Hotel', restaurant: 'Chaat Corner Photo', video: 'Delhi Metro Guide Video' },
+                restaurants: [{name: "Karim's (Old Delhi)", rating: 4.5, cuisine: "Mughlai", photo: 'Karims Photo', onclick: "alert('Table booked at Karims! (Simulated)')"}, {name: "Indian Accent", rating: 4.9, cuisine: "Modern Indian", photo: 'Accent Photo', onclick: "alert('Table booked at Indian Accent! (Simulated)')"}]
+            }
+        };
+
+        // --- MOCK REVIEW DATA (NEW) ---
+        const mockReviews = [
+            { rating: 5, user: "Aisha S.", comment: "The planning tool was incredibly seamless. The cost estimation was very accurate!", date: "2025-08-20" },
+            { rating: 4, user: "Ben T.", comment: "Good service, though the payment step felt a bit long. Loved the hotel options!", date: "2025-08-25" },
+            { rating: 5, user: "Chen L.", comment: "The best feature is the Dress Code pop-up. Saved us from a cultural faux pas!", date: "2025-09-01" },
+            { rating: 3, user: "David M.", comment: "Solid routes suggested, but the restaurant booking buttons didn't work (expected in a prototype!).", date: "2025-09-10" },
+        ];
+
+
+        // --- CORE NAVIGATION AND INITIALIZATION ---
+        function switchPage(pageId) {
+            // Push current page to history ONLY if it's a forward navigation
+            if (pageId !== currentPage) {
+                if (pageHistory.length === 0 || pageHistory[pageHistory.length - 1] !== currentPage) {
+                    pageHistory.push(currentPage);
+                }
+            }
+            
+            Object.values(pages).forEach(page => {
+                if (page) page.style.display = 'none';
+            });
+            if (pages[pageId]) {
+                pages[pageId].style.display = 'block';
+                currentPage = pageId;
+            }
+            
+            // --- PAGE SETUP HOOKS ---
+            if (pageId === 'page-destination') {
+                document.getElementById('main-place').focus();
+            } else if (pageId === 'page-traveler-details') {
+                setupTravelerInputs();
+            } else if (pageId === 'page-guide-info') { // NEW HOOK
+                // Use selectedCities array to form the place name for the header
+                const mainCity = tripState.selectedCities.length > 0 ? tripState.selectedCities[0] : tripState.mainPlace;
+                populateGuideInfo(mainCity); 
+            } else if (pageId === 'page-packages-select') {
+                // Renders Hotel and Restaurant Cards on load
+                populateHotelList();
+                populateRestaurantList();
+                calculateTotal();
+            } else if (pageId === 'page-transport-select') {
+                calculateTotal(); // Recalculate cost estimate when entering this page
+            } else if (pageId === 'page-itinerary-suggest') {
+                populateItinerary();
+            } else if (pageId === 'page-receipt') {
+                populateReceiptPage(); // FIX: Ensures this runs to display data
+            } else if (pageId === 'page-online-payment') { // NEW HOOK
+                 const budget = tripState.budget.grandTotal.toLocaleString('en-IN');
+                 document.getElementById('payment-total-amount').textContent = `₹${budget}`;
+                 document.getElementById('payment-summary-text').textContent = `${tripState.numDays} Days | ${tripState.selectedCities.join(', ')}`;
+
+            } else if (pageId === 'page-review-feedback') { // NEW HOOK
+                populatePastReviews(); // FIX: Populates mock reviews
+            } else if (pageId === 'page-offline-payment') {
+                // AR/VR Simulation Page Load
+                document.getElementById('slot-summary-text').textContent = `${tripState.slotDate} | Time: ${tripState.slotTime}`;
+            } else if (pageId === 'page-receipt-success') {
+                // Setup success message based on flow
+                // NOTE: Increment trips used only on successful completion
+                if (tripState.tripsUsed < 3) tripState.tripsUsed++; 
+                
+                if (tripState.mode === 'online') {
+                    document.getElementById('success-type-header').textContent = 'Trip Successfully Booked!';
+                    document.getElementById('success-message').textContent = `Your booking is confirmed! Trips Used: ${tripState.tripsUsed} / 3 Free Trips.`;
+                } else {
+                    document.getElementById('success-type-header').textContent = 'Consultation Slot Confirmed!';
+                    document.getElementById('success-message').textContent = `Your ₹500 fee is processed. An agent will contact you for your virtual consultation on ${tripState.slotDate}.`;
+                }
+                document.getElementById('success-booking-id').textContent = 'TC-' + Math.floor(Math.random() * 90000 + 10000);
+            }
+        }
+        
+        // --- NAVIGATION LOGIC ---
+        function goBack() {
+            if (pageHistory.length > 0) {
+                const previousPageId = pageHistory.pop();
+                Object.values(pages).forEach(page => {
+                    if (page) page.style.display = 'none';
+                }
+                );
+                if (pages[previousPageId]) {
+                    pages[previousPageId].style.display = 'block';
+                    currentPage = previousPageId;
+                }
+            } else {
+                switchPage('start');
+            }
+        }
+
+        function goBackDynamic() {
+            goBack();
+        }
+        
+        function initializeApp() {
+            switchPage('login');
+            const datalist = document.getElementById('main-suggestions');
+            Object.keys(indiaData).forEach(state => {
+                const option = document.createElement('option');
+                    option.value = state;
+                    datalist.appendChild(option);
+                });
+                
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('slot-date').min = today;
+                document.getElementById('start-date-count').min = today;
+                
+                switchAuthForm('login');
+            }
+
+            // --- AUTH & SETUP LOGIC (Omitted for brevity) ---
+            function switchAuthForm(formType) {
+                const loginForm = document.getElementById('auth-login-form');
+                const registerForm = document.getElementById('auth-register-form');
+                const loginTab = document.getElementById('login-tab');
+                const registerTab = document.getElementById('register-tab');
+                const authTitle = document.getElementById('auth-title');
+
+                if (formType === 'login') {
+                    loginForm.style.display = 'block';
+                    registerForm.style.display = 'none';
+                    loginTab.classList.add('border-accent', 'text-accent');
+                    loginTab.classList.remove('border-transparent', 'text-gray-500');
+                    registerTab.classList.remove('border-accent', 'text-accent');
+                    registerTab.classList.add('border-transparent', 'text-gray-500');
+                    authTitle.textContent = 'Sign in to continue.';
+                } else {
+                    loginForm.style.display = 'none';
+                    registerForm.style.display = 'block';
+                    registerTab.classList.add('border-accent', 'text-accent');
+                    registerTab.classList.remove('border-transparent', 'text-gray-500');
+                    loginTab.classList.remove('border-accent', 'text-accent');
+                    loginTab.classList.add('border-transparent', 'text-gray-500');
+                    authTitle.textContent = 'Create a new account.';
+                }
+            }
+
+            function handleAuthSubmit(event, type) {
+                event.preventDefault();
+                const message = document.getElementById('login-message');
+                message.style.display = 'none';
+
+                if (type === 'login') {
+                    const username = document.getElementById('login-username').value;
+                    if (username) {
+                        message.textContent = 'Login successful! (Simulated)';
+                        message.style.color = 'green';
+                        message.style.display = 'block';
+                        setTimeout(() => switchPage('start'), 500);
+                    } else {
+                        message.textContent = 'Please enter your email.';
+                        message.style.color = 'red';
+                        message.style.display = 'block';
+                    }
+                } else {
+                    const email = document.getElementById('register-email').value;
+                    message.textContent = `Registration successful for ${email}! Please log in. (Simulated)`;
+                    message.style.color = 'green';
+                    message.style.display = 'block';
+                    switchAuthForm('login');
+                }
+            }
+            
+            function startOnlinePlanning() {
+                tripState.mode = 'online';
+                switchPage('page-class-select');
+            }
+            function startOfflinePlanning() {
+                tripState.mode = 'offline';
+                switchPage('page-slot-booking');
+            }
+
+            // MODIFIED: Updates city options to checkboxes when state is selected
+            function updateSubPlaces() {
+                const mainPlace = document.getElementById('main-place').value;
+                const subPlaceCheckboxes = document.getElementById('sub-place-checkboxes');
+                
+                subPlaceCheckboxes.innerHTML = '';
+                
+                if (indiaData[mainPlace] && indiaData[mainPlace].cities) {
+                    indiaData[mainPlace].cities.forEach(city => {
+                        const checkboxId = `city-${city.replace(/\s/g, '-')}`;
+                        const checkboxHtml = `
+                            <div>
+                                <input type="checkbox" id="${checkboxId}" name="subPlace" value="${city}" class="rounded text-accent focus:ring-accent mr-2">
+                                <label for="${checkboxId}" class="text-sm text-gray-700">${city}</label>
+                            </div>
+                        `;
+                        subPlaceCheckboxes.innerHTML += checkboxHtml;
+                    });
+                } else {
+                    subPlaceCheckboxes.innerHTML = '<p class="text-sm text-gray-500" id="sub-place-placeholder">Select a State/UT first...</p>';
+                }
+            }
+
+            // NEW: Handles form submission for multi-city selection
+            function submitDestinationSelection(event) {
+                event.preventDefault();
+                const mainPlace = document.getElementById('main-place').value;
+                const selectedCities = Array.from(document.querySelectorAll('#sub-place-checkboxes input[name="subPlace"]:checked')).map(cb => cb.value);
+
+                if (!mainPlace || selectedCities.length === 0) {
+                    alert("Please select at least one city in the specified State/UT.");
+                    return;
+                }
+
+                tripState.mainPlace = mainPlace;
+                tripState.selectedCities = selectedCities;
+                
+                // For legacy functions that expect a single subPlace, use the first selected city
+                tripState.subPlace = selectedCities[0]; 
+                
+                const today = new Date();
+                const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                
+                document.getElementById('num-days-count').value = selectedCities.length * 3; // Suggest 3 days per city
+                document.getElementById('start-date-count').value = tomorrow;
+                document.getElementById('adult-count-setup').value = 1;
+                
+                updateEndDateCount();
+                switchPage('page-dates-count');
+            }
+
+            document.getElementById('destination-form').addEventListener('submit', submitDestinationSelection); // Use new handler
+
+            function updateEndDateCount() {
+                const startDateStr = document.getElementById('start-date-count').value;
+                const numDays = parseInt(document.getElementById('num-days-count').value, 10);
+                
+                if (startDateStr && numDays > 0) {
+                    const startDate = new Date(startDateStr);
+                    const endDate = new Date(startDate.getTime() + (numDays - 1) * 24 * 60 * 60 * 1000);
+                    
+                    const yyyy = endDate.getFullYear();
+                    const mm = String(endDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(endDate.getDate()).padStart(2, '0');
+                    
+                    document.getElementById('end-date-count').value = `${yyyy}-${mm}-${dd}`;
+                } else {
+                    document.getElementById('end-date-count').value = '';
+                }
+            }
+            
+            function setupTravelerInputs() {
+                const adultCount = parseInt(document.getElementById('adult-count-setup').value) || 0;
+                const childCount = parseInt(document.getElementById('child-count-setup').value) || 0;
+                const totalTravelers = adultCount + childCount;
+                const travelerInputsDiv = document.getElementById('traveler-inputs');
+                
+                travelerInputsDiv.innerHTML = '';
+                tripState.adultCount = adultCount;
+                tripState.childCount = childCount;
+
+                for (let i = 1; i <= totalTravelers; i++) {
+                    const type = i <= adultCount ? 'Adult' : 'Child';
+                    const inputGroup = document.createElement('div');
+                    inputGroup.className = 'traveler-form-group';
+                    inputGroup.innerHTML = `
+                        <h4 class="font-semibold text-accent mb-2">${type} #${i}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="input-group"><label>Full Name</label><input type="text" data-id="name-${i}" placeholder="As per ID" required></div>
+                            <div class="input-group"><label>Date of Birth</label><input type="date" data-id="dob-${i}" required></div>
+                            <div class="input-group"><label>Nationality</label><input type="text" data-id="nationality-${i}" placeholder="Country" required></div>
+                        </div>
+                    `;
+                    travelerInputsDiv.appendChild(inputGroup);
+                }
+            }
+            // --- END AUTH & SETUP LOGIC ---
+
+
+            // --- GUIDE & GALLERY LOGIC ---
+
+            function populateGuideInfo() {
+                const stateData = indiaData[tripState.mainPlace];
+                // Use selectedCities array to form the place name for the header
+                const placeName = tripState.selectedCities.join(' & ') + `, ${tripState.mainPlace}`;
+                
+                document.getElementById('guide-info-sub-place-name').textContent = placeName;
+                document.getElementById('place-description').textContent = stateData?.info || "No detailed information found for this location.";
+
+                // Set up modals with current place data
+                document.getElementById('modal-place-name').textContent = placeName;
+                
+                const defaultDress = { title: "General Modesty Recommended", content: "Information on local dress code is unavailable. When in doubt, cover shoulders and knees, especially at religious sites." };
+                const dressData = stateData?.dress || defaultDress;
+                document.getElementById('modal-dress-title').textContent = dressData.title;
+                document.getElementById('modal-dress-content').textContent = dressData.content;
+                
+                const langMap = { "Tamil Nadu": "ta", "Goa": "pt", "Rajasthan": "hi", "Delhi": "hi", "Andhra Pradesh": "te" };
+                const langCode = langMap[tripState.mainPlace] || "en";
+                document.getElementById('modal-translator-link').href = `https://translate.google.com/?sl=en&tl=${langCode}&text=Hello%20where%20is%20the%20main%20temple&op=translate`;
+
+                // Populate Guides List
+                populateGuideList(stateData?.guides || []);
+                
+                // Populate Gallery (Mock Photos/Videos)
+                populateGallery(stateData?.gallery || {});
+            }
+            
+            function populateGuideList(guides) {
+                const guideListDiv = document.getElementById('guide-list');
+                guideListDiv.innerHTML = '';
+
+                if (guides.length === 0) {
+                    guideListDiv.innerHTML = '<p class="text-sm text-gray-500 col-span-2">No recommended local guides found for this region. Please refer to official tourism websites.</p>';
+                    return;
+                }
+
+                guides.forEach(guide => {
+                    const guideCard = document.createElement('div');
+                    guideCard.className = 'guide-card';
+                    guideCard.innerHTML = `
+                        <p class="font-bold text-accent">${guide.name} <span class="text-xs text-gray-500">(${guide.specialty})</span></p>
+                        <p class="text-sm text-secondary my-1"><i class="fas fa-phone-alt"></i> ${guide.contact}</p>
+                        <button class="select-btn bg-primary hover:bg-orange-700 mt-2 text-xs">Contact Guide</button>
+                    `;
+                    guideListDiv.appendChild(guideCard);
+                });
+            }
+            
+            function populateGallery(gallery) {
+                const galleryDiv = document.getElementById('gallery-grid');
+                galleryDiv.innerHTML = '';
+                
+                const items = [
+                    { type: 'Hotel Photo', content: gallery.hotel || 'Hotel Preview Unavailable' },
+                    { type: 'Restaurant Photo', content: gallery.restaurant || 'Restaurant Preview Unavailable' },
+                    { type: 'Video/Virtual Tour Link', content: gallery.video || 'Video Preview Unavailable', span: 'col-span-2' }
+                ];
+
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = `h-24 bg-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-600 p-2 ${item.span || ''}`;
+                    itemDiv.textContent = item.content;
+                    galleryDiv.appendChild(itemDiv);
+                });
+            }
+
+            // NEW: Dress Code Modal Logic
+            function showDressCodeModal() {
+                document.getElementById('dress-code-modal').classList.remove('hidden');
+            }
+            function hideDressCodeModal() {
+                document.getElementById('dress-code-modal').classList.add('hidden');
+            }
+            // NEW: Translator Modal Logic
+            function showTranslatorModal() {
+                document.getElementById('translator-modal').classList.remove('hidden');
+            }
+            function hideTranslatorModal() {
+                document.getElementById('translator-modal').classList.add('hidden');
+            }
+
+
+            // --- PACKAGES/PRICING & PRE-BOOKING LOGIC ---
+
+            // NEW: Renders Restaurant List for Pre-Booking Hub
+            function populateRestaurantList() {
+                const restaurantListDiv = document.getElementById('dining-options');
+                restaurantListDiv.innerHTML = '';
+
+                const cityData = indiaData[tripState.mainPlace];
+                const restaurants = cityData?.restaurants || [];
+
+                if (!cityData || restaurants.length === 0) {
+                     restaurantListDiv.innerHTML = '<p class="text-sm text-gray-500 col-span-2">No specific restaurant recommendations found for pre-booking.</p>';
+                     return;
+                }
+
+                restaurants.forEach((rest, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'booking-card';
+                    // Use the mock onclick property for simulated booking
+                    card.innerHTML = `
+                        <div class="booking-card-img text-xs flex items-center justify-center bg-green-50 text-secondary">
+                            ${rest.photo} (Mock Image)
+                        </div>
+                        <div class="booking-card-header">
+                            <h4 class="font-bold text-lg text-gray-800">${rest.name}</h4>
+                            <span class="text-sm text-gray-600">${rest.cuisine}</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">
+                            <i class="fas fa-star rating-star"></i> ${rest.rating} Rating (${Math.floor(Math.random() * 500) + 100} Reviews)
+                        </p>
+                        <button onclick="${rest.onclick}" class="btn-base w-full bg-primary text-white p-2 text-sm rounded-lg hover:bg-orange-700">
+                            <i class="fas fa-calendar-alt"></i> Book Table (Simulated)
+                        </button>
+                    `;
+                    restaurantListDiv.appendChild(card);
+                });
+            }
+
+            // MODIFIED: Now populates hotel cards including rating and photo
+            function populateHotelList() {
+                const hotelListDiv = document.getElementById('hotel-list');
+                hotelListDiv.innerHTML = '';
+                
+                const cityData = indiaData[tripState.mainPlace];
+                if (!cityData || !cityData.hotels) {
+                    hotelListDiv.innerHTML = '<p class="text-red-500">No hotel data available for this location.</p>';
+                    return;
+                }
+                
+                let filteredHotels = cityData.hotels;
+
+                filteredHotels.forEach(hotel => {
+                    let price = hotel.base;
+                    
+                    if (tripState.travelClass === 'luxury') {
+                        price = Math.round(price * 1.15); 
+                    } else if (tripState.travelClass === 'first') {
+                        price = Math.round(price * 1.08); 
+                    } 
+
+                    const numNights = tripState.numDays > 0 ? tripState.numDays - 1 : 0;
+
+                    const listItem = document.createElement('div');
+                    listItem.className = 'list-item flex flex-col cursor-pointer';
+                    // Check if this is the currently selected hotel for persistence
+                    if (tripState.hotel.name === hotel.name) listItem.classList.add('selected');
+
+                    listItem.dataset.name = hotel.name;
+                    listItem.dataset.price = price;
+                    listItem.dataset.type = hotel.type;
+                    listItem.onclick = () => selectHotel(listItem);
+                    
+                    listItem.innerHTML = `
+                        <div class="booking-card-img text-xs flex items-center justify-center bg-blue-50 text-accent mb-3">
+                            ${hotel.photo} (Mock Image)
+                        </div>
+                        <div class="flex justify-between items-start w-full">
+                            <div class="flex-grow">
+                                <p class="font-bold text-lg text-gray-800">${hotel.name}</p>
+                                <p class="text-sm text-gray-600 mb-1">${hotel.type} Class | ${tripState.travelClass.charAt(0).toUpperCase() + tripState.travelClass.slice(1)}</p>
+                                <p class="text-xs text-gray-600">
+                                    <i class="fas fa-star rating-star"></i> ${hotel.rating} (${hotel.review_count} Reviews)
+                                </p>
+                            </div>
+                            <div class="mt-0 flex-shrink-0 text-right">
+                                <span class="text-xl font-bold text-secondary">₹${price.toLocaleString('en-IN')}</span>
+                                <p class="text-xs text-gray-500">/night</p>
+                                <button class="btn-base bg-accent text-white p-1 mt-1 rounded-lg text-xs hover:bg-indigo-700">Select Stay</button>
+                            </div>
+                        </div>
+                    `;
+                    hotelListDiv.appendChild(listItem);
+                });
+                
+                const firstHotelElement = document.querySelector('#hotel-list .list-item');
+                if(firstHotelElement && !tripState.hotel.name) selectHotel(firstHotelElement);
+            }
+            
+            function selectHotel(element) {
+                document.querySelectorAll('#hotel-list .list-item').forEach(el => el.classList.remove('selected'));
+                element.classList.add('selected');
+
+                tripState.hotel.name = element.dataset.name;
+                tripState.hotel.price = parseInt(element.dataset.price, 10);
+                tripState.hotel.type = element.dataset.type;
+                // IMPORTANT: Recalculate costs immediately upon selection
+                calculateTotal(); 
+            }
+
+            function calculateTotal() {
+                const totalTravelers = tripState.adultCount + tripState.childCount;
+                const numDays = tripState.numDays;
+                const numNights = numDays > 0 ? numDays - 1 : 0;
+                const travelClassMultiplier = {
+                    'economy': 1.0,
+                    'first': 1.08,
+                    'luxury': 1.15
+                }[tripState.travelClass] || 1.0;
+
+                const accommodationCost = tripState.hotel.price * numNights * totalTravelers;
+                
+                const diningPackageSelect = document.getElementById('dining-package');
+                const diningCostPerDay = diningPackageSelect ? (parseInt(diningPackageSelect.options[diningPackageSelect.selectedIndex].dataset.cost) || 0) : tripState.diningCostPerDay;
+                tripState.diningCostPerDay = diningCostPerDay;
+                const diningCost = diningCostPerDay * numDays * totalTravelers;
+                
+                const localTransportSelect = document.getElementById('local-transport');
+                // Only Rental Car has a fee (2500/day)
+                const rentalCarCost = localTransportSelect && localTransportSelect.value === 'rental' ? parseInt(localTransportSelect.options[localTransportSelect.selectedIndex].dataset.cost) || 0 : 0;
+                const transportCost = rentalCarCost * numDays * totalTravelers;
+                
+                // Subscription Logic: Add fixed fee only if more than 3 trips used
+                const subscriptionFee = tripState.tripsUsed >= 3 ? SUBSCRIPTION_FEE_PER_TRIP : 0;
+
+                // Base Cost (Simulated flight/trip cost) + Subscription Fee
+                const baseCostWithSubscription = Math.round(15000 * totalTravelers * travelClassMultiplier) + subscriptionFee; 
+                
+                const subtotal = accommodationCost + diningCost + transportCost + baseCostWithSubscription;
+                
+                // Agency Fee (0% commission) is removed. Tax is still applied.
+                const tax = subtotal * 0.18; 
+                const grandTotal = subtotal + tax;
+                
+                tripState.budget = {
+                    accommodation: Math.round(accommodationCost),
+                    dining: Math.round(diningCost),
+                    transport: Math.round(transportCost),
+                    flight: Math.round(baseCostWithSubscription),
+                    subtotal: Math.round(subtotal),
+                    tax: Math.round(tax),
+                    grandTotal: Math.round(grandTotal)
+                };
+                
+                if (document.getElementById('current-package-cost')) {
+                     document.getElementById('current-package-cost').textContent = `₹${(accommodationCost + diningCost).toLocaleString('en-IN')}`;
+                }
+                if (document.getElementById('current-transport-cost')) {
+                    // Update transport cost display to include the fixed fee simulation
+                     document.getElementById('current-transport-cost').textContent = `₹${(transportCost + baseCostWithSubscription).toLocaleString('en-IN')}`;
+                }
+
+                return tripState.budget;
+            }
+
+
+            // MODIFIED: Route Suggestion logic fixed and enhanced for visual clarity
+            function populateItinerary() {
+                // Determine the cycle of cities to visit
+                const cities = tripState.selectedCities;
+                const numCities = cities.length;
+                
+                const stateData = indiaData[tripState.mainPlace];
+                const numRoutes = parseInt(document.getElementById('num-routes').value, 10);
+                const routeDetailsDiv = document.getElementById('route-plan-details');
+                
+                // Update header to reflect multiple cities
+                const placeName = cities.length > 0 ? cities.join(' -> ') + ` (${tripState.mainPlace})` : tripState.mainPlace;
+                document.getElementById('itinerary-sub-place-name').textContent = placeName;
+                routeDetailsDiv.innerHTML = '';
+
+                for (let r = 0; r < Math.min(numRoutes, 2); r++) { // Limit to 2 route variations
+                    const routeName = `Route Option ${r + 1} (${r === 0 ? 'Recommended' : 'Alternative'})`;
+                    const routeContainer = document.createElement('div');
+                    routeContainer.className = 'route-container cursor-pointer';
+                    routeContainer.dataset.routeIndex = r;
+                    routeContainer.onclick = () => selectRoute(routeContainer, routeName);
+                    
+                    let detailsHtml = '';
+                    
+                    // --- CORE ITINERARY LOGIC: Allocation and Cycling ---
+                    for (let day = 0; day < tripState.numDays; day++) {
+                        // Determine which city the user is in on this specific day
+                        const currentCityIndex = Math.floor(day * numCities / tripState.numDays);
+                        const currentCity = cities[currentCityIndex] || cities[0]; 
+                        
+                        // Get activities for the current city
+                        const activitiesForCity = stateData?.routes?.[currentCity] || ["General Sightseeing"];
+                        
+                        // Calculate an activity index that cycles unique activities within the city's list
+                        const activityIndex = Math.floor(day * (activitiesForCity.length / tripState.numDays) * numCities + r) % activitiesForCity.length;
+                        const activity = activitiesForCity[activityIndex];
+
+                        // Determine travel day description for clarity
+                        let travelDetail = '';
+                        if (day > 0) {
+                            const previousCityIndex = Math.floor((day - 1) * numCities / tripState.numDays);
+                            const previousCity = cities[previousCityIndex] || cities[0];
+                            if (currentCity !== previousCity) {
+                                travelDetail = ` (Morning Transit from ${previousCity})`;
+                            }
+                        }
+                        
+                        detailsHtml += `<p class="text-sm text-gray-700 my-1"><span class="font-semibold text-primary">Day ${day + 1} (${currentCity}):</span> ${activity} ${travelDetail}</p>`;
+                    }
+                    // --- END CORE ITINERARY LOGIC ---
+
+                    routeContainer.innerHTML = `
+                        <h4 class="text-lg font-bold text-accent mb-3">${routeName}</h4>
+                        <div class="border-t pt-2 border-gray-100">${detailsHtml}</div>
+                    `;
+                    routeDetailsDiv.appendChild(routeContainer);
+                }
+            }
+            
+            function selectRoute(element, routeName) {
+                document.querySelectorAll('#route-plan-details .route-container').forEach(el => el.classList.remove('selected'));
+                element.classList.add('selected');
+                document.getElementById('route-selection-error').classList.add('hidden');
+                tripState.selectedRoute = { name: routeName, index: parseInt(element.dataset.routeIndex, 10) };
+            }
+
+            function confirmOnlineItineraryRoute() {
+                if (!tripState.selectedRoute) {
+                    document.getElementById('route-selection-error').classList.remove('hidden');
+                    return;
+                }
+                // Populate confirmation page details
+                document.getElementById('conf-city-final').textContent = `${tripState.selectedCities.join(' & ')}, ${tripState.mainPlace}`;
+                document.getElementById('conf-nights-final').textContent = `${tripState.numDays} Days / ${tripState.numDays - 1} Nights`;
+                document.getElementById('conf-hotel-final').textContent = `${tripState.hotel.name} (${tripState.hotel.type})`;
+                const diningOption = document.getElementById('dining-package').options[document.getElementById('dining-package').selectedIndex].text;
+                document.getElementById('conf-dining-final').textContent = diningOption.split(' (')[0];
+                const transportOption = document.getElementById('local-transport').options[document.getElementById('local-transport').selectedIndex].text;
+                document.getElementById('conf-transport-final').textContent = transportOption.split(' (')[0];
+                document.getElementById('conf-route-final').textContent = tripState.selectedRoute.name;
+
+                switchPage('page-itinerary-confirm');
+            }
+            
+            function confirmOnlineItinerary() {
+                if (!document.getElementById('final-confirm-check').checked) {
+                    alert('You must confirm the itinerary details are correct before proceeding.');
+                    return;
+                }
+                // FIX: Navigate to the receipt (final review) page first
+                switchPage('page-receipt');
+            }
+
+            // NEW: Process Online Payment
+            function processOnlinePayment(event) {
+                event.preventDefault();
+                // Simulate payment processing delay
+                alert(`Processing payment for ₹${tripState.budget.grandTotal.toLocaleString('en-IN')}...`);
+                setTimeout(() => {
+                    // Navigate to safety check after simulated payment success
+                    switchPage('page-emergency');
+                }, 500);
+            }
+
+
+            // --- RECEIPT LOGIC (FIXED) ---
+            function populateReceiptPage() {
+                const detailsDiv = document.getElementById('receipt-details');
+                const totalsDiv = document.getElementById('receipt-totals');
+                detailsDiv.innerHTML = '';
+                totalsDiv.innerHTML = '';
+                const budget = tripState.budget;
+
+                if (tripState.mode === 'offline') {
+                    document.getElementById('receipt-type-info').textContent = 'Consultation Fee Receipt (Fee Processed)';
+                    
+                    detailsDiv.innerHTML += `
+                        <div class="receipt-line"><span class="font-semibold">Service Type:</span> <span>Offline Agent Consultation + Virtual Preview</span></div>
+                        <div class="receipt-line"><span class="font-semibold">Scheduled Slot:</span> <span>${tripState.slotDate} at ${tripState.slotTime}</span></div>
+                        <div class="receipt-line"><span class="font-semibold">Fee (Refundable Deposit):</span> <span>₹500</span></div>
+                        <div class="receipt-line"><span class="font-semibold">Tax (GST):</span> <span>₹0</span></div>
+                    `;
+                    
+                    totalsDiv.innerHTML = `<span class="font-semibold">Grand Total Paid:</span> <span class="text-secondary">₹500</span>`;
+                    // If offline, continue goes to Safety Check
+                    document.getElementById('receipt-continue-btn').textContent = 'Continue to Safety Check';
+                    document.getElementById('receipt-continue-btn').onclick = () => continueFromReceipt(); 
+                    document.getElementById('receipt-back-btn').onclick = () => switchPage('page-offline-payment');
+
+
+                } else if (tripState.mode === 'online') {
+                    // Subscription status check for receipt display
+                    const subscriptionStatus = tripState.tripsUsed < 3 ? 'FREE TRIAL' : 'SUBSCRIPTION';
+                    
+                    document.getElementById('receipt-type-info').textContent = `Trip Cost Summary (Review Before Payment | Status: ${subscriptionStatus})`;
+                    
+                    detailsDiv.innerHTML += `
+                        <h3 class="font-bold text-gray-700 my-2">Trip Summary: ${tripState.selectedCities.join(', ')}, ${tripState.numDays} Days</h3>
+                        <div class="receipt-line"><span class="font-semibold">Accommodation (${tripState.hotel.name} x ${tripState.numDays - 1} nights):</span> <span>₹${budget.accommodation.toLocaleString('en-IN')}</span></div>
+                        <div class="receipt-line"><span class="font-semibold">Dining/Meals:</span> <span>₹${budget.dining.toLocaleString('en-IN')}</span></div>
+                        <div class="receipt-line"><span class="font-semibold">Local Transport (${tripState.transportMode === 'rental' ? 'Rental Car' : 'Free Options'}):</span> <span>₹${budget.transport.toLocaleString('en-IN')}</span></div>
+                        <div class="receipt-line"><span class="font-semibold">Flight/Base Trip Cost:</span> <span>₹${(budget.flight - (tripState.tripsUsed >= 3 ? SUBSCRIPTION_FEE_PER_TRIP : 0)).toLocaleString('en-IN')}</span></div>
+                        ${tripState.tripsUsed >= 3 ? 
+                            `<div class="receipt-line font-bold text-red-600"><span class="font-semibold">Subscription Fee:</span> <span>₹${SUBSCRIPTION_FEE_PER_TRIP.toLocaleString('en-IN')}</span></div>` :
+                            `<div class="receipt-line font-bold text-secondary"><span class="font-semibold">Trial Status:</span> <span>${3 - tripState.tripsUsed} Trips Remaining (FREE)</span></div>`
+                        }
+                        <div class="receipt-line"><span class="font-semibold text-primary">Subtotal (Pre-Tax):</span> <span class="text-primary">₹${budget.subtotal.toLocaleString('en-IN')}</span></div>
+                        <div class="receipt-line"><span class="font-semibold">Tax (18% GST):</span> <span>₹${budget.tax.toLocaleString('en-IN')}</span></div>
+                    `;
+                    
+                    totalsDiv.innerHTML = `<span class="font-semibold">Grand Total:</span> <span class="text-secondary">₹${budget.grandTotal.toLocaleString('en-IN')}</span>`;
+                    // FIX: Continue button navigates to Payment page
+                    document.getElementById('receipt-continue-btn').textContent = `Proceed to Payment (₹${budget.grandTotal.toLocaleString('en-IN')})`;
+                    document.getElementById('receipt-continue-btn').onclick = () => switchPage('page-online-payment');
+                    document.getElementById('receipt-back-btn').onclick = () => goBack();
+                }
+            }
+            
+            function continueFromReceipt() {
+                switchPage('page-emergency');
+            }
+
+            function continueFromEmergency() {
+                // FIX: Navigate directly to the success page (bypassing review page after emergency)
+                switchPage('page-receipt-success'); 
+            }
+            
+            function populatePastReviews() {
+                const reviewsDiv = document.getElementById('past-reviews');
+                reviewsDiv.innerHTML = ''; // Clear old reviews
+
+                mockReviews.forEach(review => {
+                    const stars = '<i class="fas fa-star rating-star"></i>'.repeat(review.rating);
+                    reviewsDiv.innerHTML += `
+                        <div class="review-card-item">
+                            <p class="font-semibold text-gray-800">${stars} <span class="text-sm font-normal text-gray-600">(${review.user})</span></p>
+                            <p class="text-sm italic text-gray-700">${review.comment}</p>
+                            <p class="text-xs text-gray-500 mt-1">${review.date}</p>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('feedback-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                const rating = document.getElementById('overall-rating').value;
+                const comments = document.getElementById('feedback-comments').value;
+                console.log(`Feedback submitted: Rating ${rating}, Comments: ${comments}`);
+                switchPage('page-receipt-success'); 
+            });
+
+            document.getElementById('slot-booking-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                tripState.slotDate = document.getElementById('slot-date').value;
+                tripState.slotTime = document.getElementById('slot-time').value;
+                // FIX: Offline payment initiates Virtual Preview page (page-offline-payment is now the VP page)
+                switchPage('page-offline-payment'); 
+            });
+
+            document.getElementById('offline-payment-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                // FIX: Offline payment confirmation leads to the receipt page
+                switchPage('page-receipt'); 
+            });
+
+            // NEW: Process Online Payment
+            function processOnlinePayment(event) {
+                event.preventDefault();
+                // Simulate payment processing delay
+                alert(`Processing payment for ₹${tripState.budget.grandTotal.toLocaleString('en-IN')}...`);
+                setTimeout(() => {
+                    // Navigate to safety check after simulated payment success
+                    switchPage('page-emergency');
+                }, 500);
+            }
+            
+            // --- FORM SUBMISSION HANDLERS (ONLINE FLOW) ---
+
+            document.getElementById('class-select-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                tripState.travelClass = document.getElementById('travel-class-select').value;
+                switchPage('page-destination');
+            });
+
+            // MODIFIED: Updates city options to checkboxes when state is selected
+            function updateSubPlaces() {
+                const mainPlace = document.getElementById('main-place').value;
+                const subPlaceCheckboxes = document.getElementById('sub-place-checkboxes');
+                
+                subPlaceCheckboxes.innerHTML = '';
+                
+                if (indiaData[mainPlace] && indiaData[mainPlace].cities) {
+                    indiaData[mainPlace].cities.forEach(city => {
+                        const checkboxId = `city-${city.replace(/\s/g, '-')}`;
+                        const checkboxHtml = `
+                            <div>
+                                <input type="checkbox" id="${checkboxId}" name="subPlace" value="${city}" class="rounded text-accent focus:ring-accent mr-2">
+                                <label for="${checkboxId}" class="text-sm text-gray-700">${city}</label>
+                            </div>
+                        `;
+                        subPlaceCheckboxes.innerHTML += checkboxHtml;
+                    });
+                } else {
+                    subPlaceCheckboxes.innerHTML = '<p class="text-sm text-gray-500" id="sub-place-placeholder">Select a State/UT first...</p>';
+                }
+            }
+
+            // NEW: Handles form submission for multi-city selection
+            function submitDestinationSelection(event) {
+                event.preventDefault();
+                const mainPlace = document.getElementById('main-place').value;
+                const selectedCities = Array.from(document.querySelectorAll('#sub-place-checkboxes input[name="subPlace"]:checked')).map(cb => cb.value);
+
+                if (!mainPlace || selectedCities.length === 0) {
+                    alert("Please select at least one city in the specified State/UT.");
+                    return;
+                }
+
+                tripState.mainPlace = mainPlace;
+                tripState.selectedCities = selectedCities;
+                
+                // For legacy functions that expect a single subPlace, use the first selected city
+                tripState.subPlace = selectedCities[0]; 
+                
+                const today = new Date();
+                const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                
+                document.getElementById('num-days-count').value = selectedCities.length * 3; // Suggest 3 days per city
+                document.getElementById('start-date-count').value = tomorrow;
+                document.getElementById('adult-count-setup').value = 1;
+                
+                updateEndDateCount();
+                switchPage('page-dates-count');
+            }
+
+            document.getElementById('destination-form').addEventListener('submit', submitDestinationSelection); // Use new handler
+
+            document.getElementById('dates-count-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                
+                tripState.numDays = parseInt(document.getElementById('num-days-count').value, 10);
+                tripState.adultCount = parseInt(document.getElementById('adult-count-setup').value, 10);
+                tripState.childCount = parseInt(document.getElementById('child-count-setup').value, 10);
+                tripState.startDate = document.getElementById('start-date-count').value;
+                
+                setupTravelerInputs(); 
+                switchPage('page-traveler-details');
+            });
+
+            document.getElementById('traveler-details-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                
+                const totalTravelers = tripState.adultCount + tripState.childCount;
+                let allDetails = [];
+                let allFieldsValid = true;
+
+                for (let i = 1; i <= totalTravelers; i++) {
+                    const nameInput = document.querySelector(`#traveler-inputs input[data-id="name-${i}"]`);
+                    const dobInput = document.querySelector(`#traveler-inputs input[data-id="dob-${i}"]`);
+                    const nationalityInput = document.querySelector(`#traveler-inputs input[data-id="nationality-${i}"]`);
+
+                    if (!nameInput.value || !dobInput.value || !nationalityInput.value) {
+                        allFieldsValid = false;
+                        break;
+                    }
+
+                    const type = i <= tripState.adultCount ? 'Adult' : 'Child';
+                    allDetails.push({
+                        name: nameInput.value,
+                        dob: dobInput.value,
+                        nationality: nationalityInput.value,
+                        type: type
+                    });
+                }
+
+                if (allFieldsValid) {
+                    tripState.travelerNames = allDetails;
+                    switchPage('page-guide-info');
+                } else {
+                    alert("Please fill in ALL required traveler details (Name, DOB, Nationality).");
+                }
+            });
+
+            document.getElementById('packages-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                if (!tripState.hotel.name) {
+                    alert('Please select an accommodation option.');
+                    return;
+                }
+                calculateTotal();
+                switchPage('page-transport-select');
+            });
+
+            document.getElementById('transport-form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                tripState.transportMode = document.getElementById('local-transport').value;
+                calculateTotal();
+                switchPage('page-itinerary-suggest'); 
+            });
+            // --- END FORM SUBMISSION HANDLERS ---
+
+            // --- CHATBOT LOGIC (RESTORED) ---
+            
+            function sendMessage(event) {
+                event.preventDefault();
+                const input = document.getElementById('chat-input');
+                const messageText = input.value.trim();
+                const lowerCaseMsg = messageText.toLowerCase();
+
+                if (!messageText) return;
+
+                appendMessage(messageText, 'user-message');
+                input.value = '';
+                input.disabled = true;
+                document.getElementById('chat-send-btn').disabled = true;
+
+                showBotLoading();
+
+                // Simple keyword-based response logic
+                const getBotResponse = () => {
+                    if (lowerCaseMsg.includes('cost') || lowerCaseMsg.includes('price')) {
+                        const total = tripState.budget.grandTotal.toLocaleString('en-IN');
+                        const subStatus = tripState.tripsUsed < 3 ? `(Free Trial, ${3 - tripState.tripsUsed} trips remain)` : `(Subscription Fee: ₹${SUBSCRIPTION_FEE_PER_TRIP})`;
+                        return `The estimated total trip cost is ₹${total}. Your current status is ${subStatus}.`;
+                    }
+                    if (lowerCaseMsg.includes('help') || lowerCaseMsg.includes('problem')) {
+                        return "I can answer questions about costs and places. For serious issues, please click 'View Emergency Contacts' on the main Dashboard.";
+                    }
+                    if (lowerCaseMsg.includes('emergency')) {
+                        return "For immediate assistance, dial 100 (Police) or 102 (Ambulance). You can also click the red emergency button on the dashboard.";
+                    }
+                    if (lowerCaseMsg.includes('goa') || lowerCaseMsg.includes('jaipur')) {
+                        return "We have excellent trip suggestions for that city! Please continue through the planner flow to see itineraries.";
+                    }
+                    return "I'm a simple prototype assistant. Try asking about 'cost', 'help', or 'Goa'.";
+                };
+
+                // Simulate AI response delay
+                setTimeout(() => {
+                    removeBotLoading();
+                    const botResponse = getBotResponse();
+                    appendMessage(botResponse, 'bot-message');
+                    
+                    input.disabled = false;
+                    document.getElementById('chat-send-btn').disabled = false;
+                    input.focus();
+                }, 1500);
+            }
+
+            function appendMessage(text, className) {
+                const messagesDiv = document.getElementById('chat-messages');
+                const messageElement = document.createElement('div');
+                messageElement.className = `chat-message ${className}`;
+                messageElement.textContent = text;
+                messagesDiv.appendChild(messageElement);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight; 
+            }
+
+            let loadingMessage;
+            function showBotLoading() {
+                const messagesDiv = document.getElementById('chat-messages');
+                loadingMessage = document.createElement('div');
+                loadingMessage.className = 'chat-message bot-message flex items-center space-x-2';
+                loadingMessage.innerHTML = '<span class="loading-spinner"></span><span>AI is thinking...</span>';
+                messagesDiv.appendChild(loadingMessage);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+
+            function removeBotLoading() {
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                    loadingMessage = null;
+                }
+            }
+            
+            function toggleChatbot() {
+                const modal = document.getElementById('chatbot-modal');
+                modal.classList.toggle('hidden');
+                modal.classList.toggle('active');
+            }
+            
+            // --- INITIAL CALL ---
+            window.onload = initializeApp;
+        </script>
+    </body>
+</html>
